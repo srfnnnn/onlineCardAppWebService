@@ -1,6 +1,6 @@
 //include the required pacakges
 const express = require('express');
-const mysql = require('mysql12/promise');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 const port = 3000;
 
