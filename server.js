@@ -20,10 +20,6 @@ const dbConfig = {
 const app = express();
 app.use(express.json());
 
-//start the server
-app.listen(port, () => {
-    console.log('Server running on port', port);
-});
 
 const cors = require("cors"); 
  
@@ -49,6 +45,11 @@ app.use(
     credentials: false, 
   }) 
 );
+
+//start the server
+app.listen(port, () => {
+    console.log('Server running on port', port);
+});
 
 
 //Example Route: Get all cards
