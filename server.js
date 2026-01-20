@@ -78,7 +78,32 @@ app.post('/addcard', async (req,res) => {
  });
 
 // Update card using POST
-app.post('/editcard/:id', async (req, res) => {
+// app.post('/editcard/:id', async (req, res) => {
+//     const id = req.params.id;
+//     const { card_name, card_pic } = req.body;
+
+//     try {
+//         let connection = await mysql.createConnection(dbConfig);
+
+//         const [result] = await connection.execute(
+//             `UPDATE cards 
+//              SET card_name = ?, card_pic = ?
+//              WHERE id = ?`,
+//             [card_name, card_pic, id]
+//         );
+
+//         if (result.affectedRows === 0) {
+//             res.status(404).json({ message: 'Card not found' });
+//         } else {
+//             res.json({ message: 'Card updated successfully' });
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Server error - could not update card' });
+//     }
+// });
+
+app.put('/editcard/:id', async (req, res) => {
     const id = req.params.id;
     const { card_name, card_pic } = req.body;
 
