@@ -64,18 +64,44 @@ app.get('/allcards', async (req,res) => {
     }
 });
 
-//Example Route: Create a new card
-app.post('/addcard', async (req,res) => {
+app.post('/addcard', async (req, res) => {
     const { card_name, card_pic } = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO cards (card_name, card_pic) VALUES (?, ?)', [card_name, card_pic]);
-        res.status(201).json({message: 'Card '+card_name+' added successfully'});
+
+        // Insert the card
+        const [result] = await connection.execute(
+            'INSERT INTO cards (card_name, card_pic) VALUES (?, ?)',
+            [card_name, card_pic]
+        );
+
+        // result.insertId contains the new card's ID
+        const newCard = {
+            id: result.insertId,
+            card_name,
+            card_pic
+        };
+
+        res.status(201).json(newCard); // Return the new card object
     } catch (err) {
         console.error(err);
-        res.status(500).json({message: 'Server error - could not add card '+card_name});
+        res.status(500).json({ message: 'Server error - could not add card '+card_name });
     }
- });
+});
+
+
+//Example Route: Create a new card
+// app.post('/addcard', async (req,res) => {
+//     const { card_name, card_pic } = req.body;
+//     try {
+//         let connection = await mysql.createConnection(dbConfig);
+//         await connection.execute('INSERT INTO cards (card_name, card_pic) VALUES (?, ?)', [card_name, card_pic]);
+//         res.status(201).json({message: 'Card '+card_name+' added successfully'});
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({message: 'Server error - could not add card '+card_name});
+//     }
+//  });
 
 // Update card using POST
 // app.post('/editcard/:id', async (req, res) => {
