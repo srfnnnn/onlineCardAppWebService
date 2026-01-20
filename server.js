@@ -104,7 +104,7 @@ app.post('/editcard/:id', async (req, res) => {
 });
 
 // Fetch one card by ID
-app.get('/cards/:id', async (req, res) => {
+app.get('/editcard/:id', async (req, res) => {
     const id = req.params.id;
     try {
         let connection = await mysql.createConnection(dbConfig);
@@ -125,13 +125,11 @@ app.get('/cards/:id', async (req, res) => {
 });
 
 
-// Delete card using POST
-app.post('/deletecard/:id', async (req, res) => {
+// DELETE a card by ID
+app.delete('/deletecard/:id', async (req, res) => {
     const id = req.params.id;
-
     try {
         let connection = await mysql.createConnection(dbConfig);
-
         const [result] = await connection.execute(
             'DELETE FROM cards WHERE id = ?',
             [id]
