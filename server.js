@@ -25,6 +25,32 @@ app.listen(port, () => {
     console.log('Server running on port', port);
 });
 
+const cors = require("cors"); 
+ 
+const allowedOrigins = [ 
+  "http://localhost:3000", 
+  // "https://YOUR-frontend.vercel.app",   // add later 
+  // "https://YOUR-frontend.onrender.com"  // add later 
+]; 
+ 
+app.use( 
+  cors({ 
+    origin: function (origin, callback) { 
+      // allow requests with no origin (Postman/server-to-server) 
+      if (!origin) return callback(null, true); 
+ 
+      if (allowedOrigins.includes(origin)) { 
+        return callback(null, true); 
+      } 
+      return callback(new Error("Not allowed by CORS")); 
+    }, 
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+    allowedHeaders: ["Content-Type", "Authorization"], 
+    credentials: false, 
+  }) 
+);
+
+
 //Example Route: Get all cards
 app.get('/allcards', async (req,res) => {
     try {
@@ -49,3 +75,53 @@ app.post('/addcard', async (req,res) => {
         res.status(500).json({message: 'Server error - could not add card '+card_name});
     }
  });
+
+// Update package using POST
+app.post('/editcard/:id', async (req, res) => {
+    const id = req.params.id;
+    const { card_name, card_pic } = req.body;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+
+        const [result] = await connection.execute(
+            `UPDATE photobooth 
+             SET card_name = ?, card_pic = ?
+             WHERE id = ?`,
+            [card_name, card_pic, id]
+        );
+
+        if (result.affectedRows === 0) {
+            res.status(404).json({ message: 'Card not found' });
+        } else {
+            res.json({ message: 'Card updated successfully' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not update card' });
+    }
+});
+
+// Delete package using POST
+app.post('/deletecard/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+
+        const [result] = await connection.execute(
+            'DELETE FROM cards WHERE id = ?',
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            res.status(404).json({ message: 'Card not found' });
+        } else {
+            res.json({ message: 'Card deleted successfully' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not delete card' });
+    }
+});
+
