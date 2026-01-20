@@ -76,7 +76,7 @@ app.post('/addcard', async (req,res) => {
     }
  });
 
-// Update package using POST
+// Update card using POST
 app.post('/editcard/:id', async (req, res) => {
     const id = req.params.id;
     const { card_name, card_pic } = req.body;
@@ -85,7 +85,7 @@ app.post('/editcard/:id', async (req, res) => {
         let connection = await mysql.createConnection(dbConfig);
 
         const [result] = await connection.execute(
-            `UPDATE photobooth 
+            `UPDATE cards 
              SET card_name = ?, card_pic = ?
              WHERE id = ?`,
             [card_name, card_pic, id]
@@ -102,7 +102,7 @@ app.post('/editcard/:id', async (req, res) => {
     }
 });
 
-// Delete package using POST
+// Delete card using POST
 app.post('/deletecard/:id', async (req, res) => {
     const id = req.params.id;
 
