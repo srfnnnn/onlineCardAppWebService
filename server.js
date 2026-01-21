@@ -129,71 +129,98 @@ app.post('/addcard', async (req, res) => {
 //     }
 // });
 
-app.put('/editcard/:id', async (req, res) => {
-    const id = req.params.id;
+// app.put('/editcard/:id', async (req, res) => {
+//     const id = req.params.id;
+//     const { card_name, card_pic } = req.body;
+//
+//     try {
+//         let connection = await mysql.createConnection(dbConfig);
+//
+//         const [result] = await connection.execute(
+//             `UPDATE cards
+//              SET card_name = ?, card_pic = ?
+//              WHERE id = ?`,
+//             [card_name, card_pic, id]
+//         );
+//
+//         if (result.affectedRows === 0) {
+//             res.status(404).json({ message: 'Card not found' });
+//         } else {
+//             res.json({ message: 'Card updated successfully' });
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Server error - could not update card' });
+//     }
+// });
+//
+// // Fetch one card by ID
+// app.get('/editcard/:id', async (req, res) => {
+//     const id = req.params.id;
+//     try {
+//         let connection = await mysql.createConnection(dbConfig);
+//         const [rows] = await connection.execute(
+//             `SELECT * FROM cards WHERE id = ?`,
+//             [id]
+//         );
+//
+//         if (rows.length === 0) {
+//             res.status(404).json({ message: 'Card not found' });
+//         } else {
+//             res.json(rows[0]); // send the single card
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Server error - could not fetch card' });
+//     }
+// });
+//
+//
+// // DELETE a card by ID
+// app.delete('/deletecard/:id', async (req, res) => {
+//     const id = req.params.id;
+//     try {
+//         let connection = await mysql.createConnection(dbConfig);
+//         const [result] = await connection.execute(
+//             'DELETE FROM cards WHERE id = ?',
+//             [id]
+//         );
+//
+//         if (result.affectedRows === 0) {
+//             res.status(404).json({ message: 'Card not found' });
+//         } else {
+//             res.json({ message: 'Card deleted successfully' });
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Server error - could not delete card' });
+//     }
+// });
+
+app.put('/updatecard/:id', async (req, res) => {
+    const { id } = req.params;
     const { card_name, card_pic } = req.body;
-
-    try {
+    try{
         let connection = await mysql.createConnection(dbConfig);
-
-        const [result] = await connection.execute(
-            `UPDATE cards 
-             SET card_name = ?, card_pic = ?
-             WHERE id = ?`,
-            [card_name, card_pic, id]
-        );
-
-        if (result.affectedRows === 0) {
-            res.status(404).json({ message: 'Card not found' });
-        } else {
-            res.json({ message: 'Card updated successfully' });
-        }
+        await connection.execute('UPDATE cards SET card_name=?, card_pic=? WHERE id=?', [card_name, card_pic, id]);
+        res.status(201).json({ message: 'Card ' + id + ' updated successfully!' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error - could not update card' });
+        res.status(500).json({ message: 'Server error - could not update card ' + id });
     }
 });
 
-// Fetch one card by ID
-app.get('/editcard/:id', async (req, res) => {
-    const id = req.params.id;
-    try {
-        let connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute(
-            `SELECT * FROM cards WHERE id = ?`,
-            [id]
-        );
-
-        if (rows.length === 0) {
-            res.status(404).json({ message: 'Card not found' });
-        } else {
-            res.json(rows[0]); // send the single card
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error - could not fetch card' });
-    }
-});
-
-
-// DELETE a card by ID
+// Example Route: Delete a card
 app.delete('/deletecard/:id', async (req, res) => {
-    const id = req.params.id;
-    try {
+    const { id } = req.params;
+    try{
         let connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute(
-            'DELETE FROM cards WHERE id = ?',
-            [id]
-        );
-
-        if (result.affectedRows === 0) {
-            res.status(404).json({ message: 'Card not found' });
-        } else {
-            res.json({ message: 'Card deleted successfully' });
-        }
+        await connection.execute('DELETE FROM cards WHERE id=?', [id]);
+        res.status(201).json({ message: 'Card ' + id + ' deleted successfully!' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error - could not delete card' });
+        res.status(500).json({ message: 'Server error - could not delete card ' + id });
     }
 });
+
 
