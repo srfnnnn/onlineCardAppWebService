@@ -129,51 +129,51 @@ app.post('/addcard', async (req, res) => {
 //     }
 // });
 
-// app.put('/editcard/:id', async (req, res) => {
-//     const id = req.params.id;
-//     const { card_name, card_pic } = req.body;
-//
-//     try {
-//         let connection = await mysql.createConnection(dbConfig);
-//
-//         const [result] = await connection.execute(
-//             `UPDATE cards
-//              SET card_name = ?, card_pic = ?
-//              WHERE id = ?`,
-//             [card_name, card_pic, id]
-//         );
-//
-//         if (result.affectedRows === 0) {
-//             res.status(404).json({ message: 'Card not found' });
-//         } else {
-//             res.json({ message: 'Card updated successfully' });
-//         }
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ message: 'Server error - could not update card' });
-//     }
-// });
-//
-// Fetch one card by ID
-app.get('/editcard/:id', async (req, res) => {
+app.put('/editcard/:id', async (req, res) => {
     const id = req.params.id;
+    const { card_name, card_pic } = req.body;
+
     try {
         let connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute(
-            `SELECT * FROM cards WHERE id = ?`,
-            [id]
+
+        const [result] = await connection.execute(
+            `UPDATE cards
+             SET card_name = ?, card_pic = ?
+             WHERE id = ?`,
+            [card_name, card_pic, id]
         );
 
-        if (rows.length === 0) {
+        if (result.affectedRows === 0) {
             res.status(404).json({ message: 'Card not found' });
         } else {
-            res.json(rows[0]); // send the single card
+            res.json({ message: 'Card updated successfully' });
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error - could not fetch card' });
+        res.status(500).json({ message: 'Server error - could not update card' });
     }
 });
+//
+// Fetch one card by ID
+// app.get('/editcard/:id', async (req, res) => {
+//     const id = req.params.id;
+//     try {
+//         let connection = await mysql.createConnection(dbConfig);
+//         const [rows] = await connection.execute(
+//             `SELECT * FROM cards WHERE id = ?`,
+//             [id]
+//         );
+//
+//         if (rows.length === 0) {
+//             res.status(404).json({ message: 'Card not found' });
+//         } else {
+//             res.json(rows[0]); // send the single card
+//         }
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Server error - could not fetch card' });
+//     }
+// });
 
 
 // DELETE a card by ID
