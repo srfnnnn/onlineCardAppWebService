@@ -155,25 +155,25 @@ app.put('/editcard/:id', async (req, res) => {
 });
 //
 // Fetch one card by ID
-// app.get('/editcard/:id', async (req, res) => {
-//     const id = req.params.id;
-//     try {
-//         let connection = await mysql.createConnection(dbConfig);
-//         const [rows] = await connection.execute(
-//             `SELECT * FROM cards WHERE id = ?`,
-//             [id]
-//         );
-//
-//         if (rows.length === 0) {
-//             res.status(404).json({ message: 'Card not found' });
-//         } else {
-//             res.json(rows[0]); // send the single card
-//         }
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ message: 'Server error - could not fetch card' });
-//     }
-// });
+app.get('/editcard/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        const [rows] = await connection.execute(
+            `SELECT * FROM cards WHERE id = ?`,
+            [id]
+        );
+
+        if (rows.length === 0) {
+            res.status(404).json({ message: 'Card not found' });
+        } else {
+            res.json(rows[0]); // send the single card
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not fetch card' });
+    }
+});
 
 
 // DELETE a card by ID
