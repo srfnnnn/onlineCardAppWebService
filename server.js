@@ -25,8 +25,7 @@ const cors = require("cors");
  
 const allowedOrigins = [ 
   "http://localhost:3000", 
-  // "https://YOUR-frontend.vercel.app",   // add later 
-  // "https://YOUR-frontend.onrender.com"  // add later 
+  // "https://cardappweb.vercel.app" // add later 
 ]; 
  
 app.use( 
@@ -51,6 +50,52 @@ app.listen(port, () => {
     console.log('Server running on port', port);
 });
 
+//hardcoded admin login 
+const DEMO_USER = { id: 1, username: "admin", password: "admin123" }; 
+
+//login 
+const jwt = require("jsonwebtoken"); 
+const JWT_SECRET = process.env.JWT_SECRET;
+
+app.post("/login", (req, res) => { 
+  const { username, password } = req.body; // extract the username and password from the body 
+ 
+  if (username !== DEMO_USER.username || password !== DEMO_USER.password) { 
+    return res.status(401).json({ error: "Invalid credentials" }); 
+  } 
+ 
+  const token = jwt.sign( 
+    { userId: DEMO_USER.id, username: DEMO_USER.username }, 
+    JWT_SECRET, 
+    { expiresIn: "1h" } 
+  ); //use in authentication later
+ 
+  res.json({ token }); //returns the token back in the frontend 
+}); 
+
+//middleware to verify the JWT 
+function requireAuth(req, res, next) {
+  const header = req.headers.authorization; // "Bearer <token>"
+
+  if (!header) {
+    return res.status(401).json({ error: "Authorization header missing" });
+  }
+
+  const [type, token] = header.split(" ");
+
+  if (type !== "Bearer" || !token) {
+    return res.status(401).json({ error: "Invalid authorization header" });
+  }
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+}
+
 
 //Example Route: Get all cards
 app.get('/allcards', async (req,res) => {
@@ -64,8 +109,15 @@ app.get('/allcards', async (req,res) => {
     }
 });
 
-app.post('/addcard', async (req, res) => {
+app.post('/addcard',  requireAuth, async (req, res) => {
     const { card_name, card_pic } = req.body;
+
+    if (!card_name || !card_pic) {
+    return res
+      .status(400)
+      .json({ error: "card_name and card_pic are required" });
+    }
+
     try {
         let connection = await mysql.createConnection(dbConfig);
 
